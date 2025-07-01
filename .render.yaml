@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: hospital-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:create_app
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        value: your-secret-key
+    autoDeploy: true
+    rootDir: backend
+  - type: web
+    name: hospital-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    plan: free
+    autoDeploy: true
+    rootDir: frontend

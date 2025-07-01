@@ -164,6 +164,25 @@ const Sidebar: React.FC = () => {
             />
           </StyledListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <StyledListItemButton onClick={() => {
+            localStorage.removeItem('role');
+            window.location.href = '/login';
+          }}>
+            <StyledListItemIcon>
+              {/* You can use any icon you like here */}
+              <Dashboard />
+            </StyledListItemIcon>
+            <ListItemText 
+              primary="Logout"
+              primaryTypographyProps={{
+                sx: {
+                  transition: 'all 0.3s ease-in-out',
+                }
+              }}
+            />
+          </StyledListItemButton>
+        </ListItem>
       </Box>
     </Box>
   );

@@ -2,6 +2,12 @@
 
 A modern web-based Hospital Management System built with React, TypeScript, Flask, and SQLite.
 
+
+## Demo Credentials
+
+- **Username:** admin
+- **Password:** 123
+
 ## Features
 
 - Patient Management

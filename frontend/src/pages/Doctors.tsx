@@ -191,7 +191,11 @@ const Doctors: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredDoctors.map((doctor) => (
+            {doctors.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">No doctors yet.</TableCell>
+              </TableRow>
+            ) : filteredDoctors.map((doctor) => (
               <TableRow key={doctor.id}>
                 <TableCell>{`${doctor.first_name} ${doctor.last_name}`}</TableCell>
                 <TableCell>{doctor.specialization}</TableCell>
@@ -319,4 +323,4 @@ const Doctors: React.FC = () => {
   );
 };
 
-export default Doctors; 
+export default Doctors;

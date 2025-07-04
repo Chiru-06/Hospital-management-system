@@ -13,6 +13,8 @@ from routes.billing import billing_bp
 from routes.prescriptions import prescriptions_bp
 from routes.lab_tests import lab_tests_bp
 from logger import setup_logger
+from routes.role_dashboards import doctor_dashboard_bp, patient_dashboard_bp, manager_dashboard_bp
+from routes.admin_dashboard import admin_dashboard_bp
 
 def create_app():
     app = Flask(__name__)
@@ -81,6 +83,11 @@ def create_app():
     app.register_blueprint(billing_bp, url_prefix='/api')
     app.register_blueprint(prescriptions_bp, url_prefix='/api')
     app.register_blueprint(lab_tests_bp, url_prefix='/api')
+    # Register new role dashboards
+    app.register_blueprint(doctor_dashboard_bp)
+    app.register_blueprint(patient_dashboard_bp)
+    app.register_blueprint(manager_dashboard_bp)
+    app.register_blueprint(admin_dashboard_bp)
 
     with app.app_context():
         # Import models here to avoid circular imports

@@ -87,6 +87,7 @@ const LabTests: React.FC = () => {
     status: 'pending',
     notes: '',
   });
+  const role = localStorage.getItem('role');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -230,13 +231,15 @@ const LabTests: React.FC = () => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h4">Lab Tests Management</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          New Lab Test
-        </Button>
+        {['admin', 'manager'].includes(role || '') && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            New Lab Test
+          </Button>
+        )}
       </Box>
 
       {error && (
@@ -280,11 +283,9 @@ const LabTests: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredTests.length === 0 ? (
+              {labTests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    No lab tests found
-                  </TableCell>
+                  <TableCell colSpan={10} align="center">No lab tests yet.</TableCell>
                 </TableRow>
               ) : (
                 filteredTests.map((test) => {
@@ -308,10 +309,10 @@ const LabTests: React.FC = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <IconButton onClick={() => handleOpenDialog(test)}>
+                        <IconButton onClick={() => handleOpenDialog(test)} disabled={!['admin', 'manager'].includes(role || '')}>
                           <EditIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleDelete(test.id)}>
+                        <IconButton onClick={() => handleDelete(test.id)} disabled={!['admin', 'manager'].includes(role || '')}>
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
@@ -336,136 +337,144 @@ const LabTests: React.FC = () => {
           {selectedTest ? 'Edit Lab Test' : 'New Lab Test'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                select
-                label="Patient"
-                value={formData.patient_id || ''}
-                onChange={(e) => setFormData({ ...formData, patient_id: Number(e.target.value) })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Select patient' }}
-              >
-                {patients.map((patient) => (
-                  <MenuItem key={patient.id} value={patient.id}>
-                    {patient.first_name} {patient.last_name}
-                  </MenuItem>
-                ))}
-              </TextField>
+          {['admin', 'manager'].includes(role || '') ? (
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  select
+                  label="Patient"
+                  value={formData.patient_id || ''}
+                  onChange={(e) => setFormData({ ...formData, patient_id: Number(e.target.value) })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Select patient' }}
+                >
+                  {patients.map((patient) => (
+                    <MenuItem key={patient.id} value={patient.id}>
+                      {patient.first_name} {patient.last_name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  select
+                  label="Doctor"
+                  value={formData.doctor_id || ''}
+                  onChange={(e) => setFormData({ ...formData, doctor_id: Number(e.target.value) })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Select doctor' }}
+                >
+                  {doctors.map((doctor) => (
+                    <MenuItem key={doctor.id} value={doctor.id}>
+                      Dr. {doctor.first_name} {doctor.last_name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Test Name"
+                  value={formData.test_name}
+                  onChange={(e) => setFormData({ ...formData, test_name: e.target.value })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Test name' }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Test Type"
+                  value={formData.test_type}
+                  onChange={(e) => setFormData({ ...formData, test_type: e.target.value })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Test type' }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  type="date"
+                  label="Test Date"
+                  value={formData.test_date}
+                  onChange={(e) => setFormData({ ...formData, test_date: e.target.value })}
+                  disabled={loading}
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ 'aria-label': 'Test date' }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  required
+                  select
+                  label="Status"
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Test status' }}
+                >
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="completed">Completed</MenuItem>
+                  <MenuItem value="cancelled">Cancelled</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Results"
+                  value={formData.results}
+                  onChange={(e) => setFormData({ ...formData, results: e.target.value })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Test results' }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  disabled={loading}
+                  inputProps={{ 'aria-label': 'Test notes' }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                select
-                label="Doctor"
-                value={formData.doctor_id || ''}
-                onChange={(e) => setFormData({ ...formData, doctor_id: Number(e.target.value) })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Select doctor' }}
-              >
-                {doctors.map((doctor) => (
-                  <MenuItem key={doctor.id} value={doctor.id}>
-                    Dr. {doctor.first_name} {doctor.last_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                label="Test Name"
-                value={formData.test_name}
-                onChange={(e) => setFormData({ ...formData, test_name: e.target.value })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Test name' }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                label="Test Type"
-                value={formData.test_type}
-                onChange={(e) => setFormData({ ...formData, test_type: e.target.value })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Test type' }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                type="date"
-                label="Test Date"
-                value={formData.test_date}
-                onChange={(e) => setFormData({ ...formData, test_date: e.target.value })}
-                disabled={loading}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{ 'aria-label': 'Test date' }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                select
-                label="Status"
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Test status' }}
-              >
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-                <MenuItem value="cancelled">Cancelled</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Results"
-                value={formData.results}
-                onChange={(e) => setFormData({ ...formData, results: e.target.value })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Test results' }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={2}
-                label="Notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                disabled={loading}
-                inputProps={{ 'aria-label': 'Test notes' }}
-              />
-            </Grid>
-          </Grid>
+          ) : (
+            <Typography color="text.secondary" sx={{ p: 2 }}>
+              Only admin and manager can create or edit lab tests.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} disabled={loading} aria-label="Cancel">
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={loading || !formData.patient_id || !formData.doctor_id || !formData.test_name || !formData.test_type}
-            aria-label={selectedTest ? 'Update lab test' : 'Create lab test'}
-          >
-            {loading ? <CircularProgress size={24} /> : selectedTest ? 'Update' : 'Create'}
-          </Button>
+          {['admin', 'manager'].includes(role || '') && (
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              disabled={loading || !formData.patient_id || !formData.doctor_id || !formData.test_name || !formData.test_type}
+              aria-label={selectedTest ? 'Update lab test' : 'Create lab test'}
+            >
+              {loading ? <CircularProgress size={24} /> : selectedTest ? 'Update' : 'Create'}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-export default LabTests; 
+export default LabTests;

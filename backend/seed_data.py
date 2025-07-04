@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 import random
+import json
+import os
 from faker import Faker
 from app import create_app, db
 from models.patient import Patient
@@ -24,174 +26,142 @@ def generate_sample_data():
     Doctor.query.delete()
     db.session.commit()
 
-    # Generate 50 doctors
-    doctors = []
-    for _ in range(50):
-        name = fake.name().split()
+    # Load sample data from JSON
+    sample_path = os.path.join(os.path.dirname(__file__), 'sample_data.json')
+    with open(sample_path, 'r') as f:
+        data = json.load(f)
+
+    # Add doctors
+    doctor_map = {}
+    for doc in data.get('doctors', []):
         doctor = Doctor(
-            first_name=name[0],
-            last_name=name[1] if len(name) > 1 else fake.last_name(),
-            specialization=random.choice([
-                "Cardiology", "Neurology", "Pediatrics", "Orthopedics", 
-                "Dermatology", "Ophthalmology", "ENT", "General Medicine"
-            ]),
-            phone=fake.phone_number(),
-            email=fake.email(),
+            id=doc['id'],
+            first_name=doc['first_name'],
+            last_name=doc['last_name'],
+            specialization=doc['specialization'],
+            phone=doc['phone'],
+            email=doc['email'],
             is_active=True
         )
-        doctors.append(doctor)
         db.session.add(doctor)
+        doctor_map[doc['id']] = doctor
     db.session.commit()
 
-    # Generate 50 patients
-    patients = []
-    for _ in range(50):
-        name = fake.name().split()
-        dob = datetime.now() - timedelta(days=random.randint(365*5, 365*90))
+    # Add patients
+    patient_map = {}
+    for pat in data.get('patients', []):
         patient = Patient(
-            first_name=name[0],
-            last_name=name[1] if len(name) > 1 else fake.last_name(),
-            date_of_birth=dob.date(),
-            gender=random.choice(["Male", "Female", "Other"]),
-            address=fake.address(),
-            phone=fake.phone_number(),
-            email=fake.email(),
+            id=pat['id'],
+            first_name=pat['first_name'],
+            last_name=pat['last_name'],
+            date_of_birth=pat['date_of_birth'],
+            gender=pat['gender'],
+            address=pat.get('address', ''),
+            phone=pat['phone'],
+            email=pat['email'],
             is_active=True
         )
-        patients.append(patient)
         db.session.add(patient)
+        patient_map[pat['id']] = patient
     db.session.commit()
 
-    # Generate 50 appointments
-    appointments = []
-    for _ in range(50):
+    # Add appointments
+    appointment_map = {}
+    for appt in data.get('appointments', []):
         appointment = Appointment(
-            patient_id=random.choice(patients).id,
-            doctor_id=random.choice(doctors).id,
-            date=(datetime.now() + timedelta(days=random.randint(-30, 30))).strftime('%Y-%m-%d'),
-            time=f"{random.randint(9, 17)}:00",
-            status=random.choice(["scheduled", "completed", "cancelled"]),
-            notes=fake.text(max_nb_chars=200)
+            id=appt['id'],
+            patient_id=appt['patient_id'],
+            doctor_id=appt['doctor_id'],
+            date=appt['date'],
+            time=appt['time'],
+            status=appt['status'],
+            notes=appt['notes']
         )
-        appointments.append(appointment)
         db.session.add(appointment)
+        appointment_map[appt['id']] = appointment
     db.session.commit()
 
-    # Generate 50 billing records
-    for _ in range(50):
-        appointment = random.choice(appointments)
+    # Add inventory
+    for item in data.get('inventory', []):
+        inv = InventoryItem(
+            id=item['id'],
+            name=item['name'],
+            category=item['category'],
+            quantity=item['quantity'],
+            unit=item['unit'],
+            price_per_unit=item['price_per_unit'],
+            supplier=item['supplier'],
+            expiry_date=item['expiry_date'],
+            minimum_stock=10,
+            is_active=True
+        )
+        db.session.add(inv)
+    db.session.commit()
+
+    # Add billing
+    for bill in data.get('billing', []):
         billing = BillingRecord(
-            patient_id=appointment.patient_id,
-            appointment_id=appointment.id,
-            total_amount=random.randint(500, 5000),
-            paid_amount=random.randint(0, 5000),
-            payment_status=random.choice(["pending", "partial", "paid"]),
-            payment_method=random.choice(["cash", "card", "insurance"]),
-            insurance_provider=fake.company() if random.random() > 0.5 else None,
-            insurance_policy_number=fake.uuid4() if random.random() > 0.5 else None,
-            notes=fake.text(max_nb_chars=200),
+            id=bill['id'],
+            patient_id=bill['patient_id'],
+            appointment_id=bill['appointment_id'],
+            total_amount=bill['total_amount'],
+            paid_amount=bill['paid_amount'],
+            payment_status=bill['payment_status'],
+            payment_method=bill['payment_method'],
+            insurance_provider=bill.get('insurance_provider'),
+            insurance_policy_number=bill.get('insurance_policy_number'),
+            notes=bill.get('notes', ''),
             is_active=True
         )
         db.session.add(billing)
     db.session.commit()
 
-    # Generate 50 inventory items
-    common_medicines = [
-        "Paracetamol", "Amoxicillin", "Ibuprofen", "Aspirin", "Omeprazole",
-        "Metformin", "Amlodipine", "Cetirizine", "Vitamin D3", "Vitamin B12"
-    ]
-    common_equipment = [
-        "Stethoscope", "Blood Pressure Monitor", "Thermometer", "Pulse Oximeter",
-        "ECG Machine", "Surgical Scissors", "Forceps", "Syringes", "Gloves", "Masks"
-    ]
-    for _ in range(50):
-        is_medicine = random.random() > 0.4
-        name = random.choice(common_medicines) if is_medicine else random.choice(common_equipment)
-        category = "Medicine" if is_medicine else "Equipment"
-        expiry = datetime.now() + timedelta(days=random.randint(180, 720)) if is_medicine else None
-        
-        item = InventoryItem(
-            name=name,
-            category=category,
-            quantity=random.randint(10, 1000),
-            unit="tablets" if is_medicine else "pieces",
-            price_per_unit=random.uniform(5.0, 500.0),
-            supplier=fake.company(),
-            expiry_date=expiry,
-            minimum_stock=random.randint(10, 50),
-            is_active=True
-        )
-        db.session.add(item)
-    db.session.commit()
-
-    # Generate 50 prescriptions with medications
-    diagnoses = [
-        "Hypertension", "Type 2 Diabetes", "Common Cold", "Bronchitis",
-        "Migraine", "Arthritis", "Allergic Rhinitis", "Gastritis"
-    ]
-    
-    dosages = ["1 tablet", "2 tablets", "5ml", "10ml"]
-    frequencies = ["Once daily", "Twice daily", "Three times daily", "Every 8 hours"]
-    durations = ["7 days", "14 days", "1 month", "2 months"]
-    
-    for _ in range(50):
+    # Add prescriptions and medications
+    for pres in data.get('prescriptions', []):
         prescription = Prescription(
-            patient_id=random.choice(patients).id,
-            doctor_id=random.choice(doctors).id,
-            diagnosis=random.choice(diagnoses),
-            notes=fake.text(max_nb_chars=200),
+            id=pres['id'],
+            patient_id=pres['patient_id'],
+            doctor_id=pres['doctor_id'],
+            appointment_id=pres.get('appointment_id'),
+            diagnosis='',
+            notes=pres.get('notes', ''),
             is_active=True
         )
         db.session.add(prescription)
-        db.session.flush()  # Get the prescription ID
-
-        # Add 1-3 medications per prescription
-        for _ in range(random.randint(1, 3)):
+        db.session.flush()
+        for med in pres.get('medications', []):
             medication = Medication(
                 prescription_id=prescription.id,
-                name=random.choice(common_medicines),
-                dosage=random.choice(dosages),
-                frequency=random.choice(frequencies),
-                duration=random.choice(durations),
-                instructions=fake.text(max_nb_chars=100),
+                name=med['name'],
+                dosage=med.get('dosage', ''),
+                frequency=med.get('frequency', ''),
+                duration=med.get('duration', ''),
+                instructions='',
                 is_active=True
             )
             db.session.add(medication)
     db.session.commit()
 
-    # Generate 50 lab tests
-    test_types = [
-        ("Blood Sugar", "Pathology"),
-        ("Complete Blood Count", "Hematology"),
-        ("Lipid Profile", "Biochemistry"),
-        ("Thyroid Function", "Endocrinology"),
-        ("X-Ray Chest", "Radiology"),
-        ("ECG", "Cardiology"),
-        ("Urine Analysis", "Pathology"),
-        ("Liver Function", "Biochemistry")
-    ]
-    
-    for _ in range(50):
-        test_name, test_type = random.choice(test_types)
-        test_date = datetime.now() + timedelta(days=random.randint(-30, 30))
-        status = random.choice(["pending", "completed", "cancelled"])
-        
-        test = LabTest(
-            patient_id=random.choice(patients).id,
-            doctor_id=random.choice(doctors).id,
-            test_name=test_name,
-            test_type=test_type,
-            test_date=test_date,
-            results=fake.text(max_nb_chars=200) if status == "completed" else None,
-            status=status,
-            notes=fake.text(max_nb_chars=200),
+    # Add lab tests
+    for test in data.get('lab_tests', []):
+        lab = LabTest(
+            id=test['id'],
+            patient_id=test['patient_id'],
+            doctor_id=test['doctor_id'],
+            appointment_id=test.get('appointment_id'),
+            test_name=test.get('test_type', ''),
+            test_type=test.get('test_type', ''),
+            test_date=test.get('date', datetime.now().date()),
+            results=test.get('result', ''),
+            status='completed',
+            notes='',
             is_active=True
         )
-        db.session.add(test)
+        db.session.add(lab)
     db.session.commit()
 
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         generate_sample_data()
-        print("Successfully generated sample data!") 
+        print("Successfully generated sample data!")

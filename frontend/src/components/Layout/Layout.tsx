@@ -1,34 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, CssBaseline } from '@mui/material';
 import Sidebar from './Sidebar';
+import Topbar from './Topbar';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const handleCollapseToggle = () => setCollapsed((prev) => !prev);
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+  // Sidebar width in px
+  const sidebarWidth = collapsed ? 72 : 256;
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        minWidth: 0,
+        width: '100vw',
+        maxWidth: '100vw',
+        maxHeight: '100vh',
+        overflowX: 'hidden', // Prevent horizontal scrolling
+        overflowY: 'hidden',
+        p: 0,
+        m: 0,
+      }}
+    >
       <CssBaseline />
-      <Sidebar />
+      {/* Sidebar: fixed width, no margin */}
+      <Box
+        sx={{
+          width: { xs: 0, sm: `${sidebarWidth}px` },
+          flexShrink: 0,
+          p: 0,
+          m: 0,
+          height: '100vh',
+          display: { xs: 'none', sm: 'block' },
+        }}
+      >
+        <Sidebar collapsed={collapsed} onCollapseToggle={handleCollapseToggle} />
+      </Box>
+      {/* Main content: flex-grow, no margin, fills remaining space */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1, sm: 2, md: 3 },
-          width: { sm: `calc(100% - 240px)` },
           minHeight: '100vh',
+          minWidth: 0,
+          maxHeight: '100vh',
+          width: { xs: '100vw', sm: `calc(100vw - ${sidebarWidth}px)` },
           backgroundColor: 'background.default',
-          overflow: 'auto',
+          overflowY: 'auto', // Allow vertical scrolling
+          overflowX: 'hidden', // Prevent horizontal scrolling
+          p: 0,
+          m: 0,
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <Box sx={{ height: { xs: '56px', sm: '64px' } }} /> {/* Responsive toolbar spacer */}
-        <Box
-          sx={{
-            maxWidth: '100%',
-            overflowX: 'auto',
-          }}
-        >
+        <Topbar />
+        {/* Responsive vertical spacing to prevent overlap with topbar */}
+        <Box sx={{ height: { xs: 56, sm: 64, md: 72 } }} />
+        <Box sx={{ flex: 1, width: '100%', overflow: 'auto', p: 0, m: 0 }}>
           {children}
         </Box>
       </Box>
@@ -36,4 +68,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default Layout; 
+export default Layout;

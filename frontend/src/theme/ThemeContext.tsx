@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ThemeProvider as MUIThemeProvider, createTheme, Theme } from '@mui/material/styles';
+import { ThemeProvider as MUIThemeProvider, createTheme } from '@mui/material/styles';
 import { PaletteMode } from '@mui/material';
 
 interface ThemeContextType {
@@ -29,34 +28,46 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     palette: {
       mode,
       primary: {
-        main: '#1976d2',
-        light: '#42a5f5',
-        dark: '#1565c0',
+        main: '#FB7185', // Coral/Peach
+        contrastText: '#fff',
       },
       secondary: {
-        main: '#9c27b0',
-        light: '#ba68c8',
-        dark: '#7b1fa2',
+        main: '#FBBF24', // Amber
+        contrastText: '#111827',
       },
       background: {
-        default: mode === 'light' ? '#f5f5f5' : '#121212',
-        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
+        default: mode === 'light' ? '#FFF7ED' : '#1F2937', // Sunrise light or deep gray
+        paper: mode === 'light' ? '#fff' : '#273449',
+      },
+      text: {
+        primary: mode === 'dark' ? '#F9FAFB' : '#111827', // Soft white or deep gray
+        secondary: mode === 'dark' ? '#FBBF24' : '#FB7185', // Amber or Coral for highlights
+      },
+      error: {
+        main: '#FB7185',
+      },
+      warning: {
+        main: '#FBBF24',
+      },
+      success: {
+        main: '#10B981',
+      },
+      info: {
+        main: '#38BDF8',
       },
     },
     typography: {
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      h1: {
-        fontSize: '2.5rem',
-        fontWeight: 500,
-      },
-      h2: {
-        fontSize: '2rem',
-        fontWeight: 500,
-      },
-      h3: {
-        fontSize: '1.75rem',
-        fontWeight: 500,
-      },
+      fontFamily: 'Montserrat, Roboto, Arial, sans-serif',
+      fontWeightRegular: 400,
+      fontWeightMedium: 600,
+      fontWeightBold: 700,
+      h1: { fontWeight: 700 },
+      h2: { fontWeight: 700 },
+      h3: { fontWeight: 700 },
+      h4: { fontWeight: 600 },
+      h5: { fontWeight: 600 },
+      h6: { fontWeight: 600 },
+      button: { fontWeight: 700 },
     },
     components: {
       MuiButton: {
@@ -64,6 +75,30 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           root: {
             textTransform: 'none',
             borderRadius: 8,
+            fontWeight: 700,
+            boxShadow: 'none',
+            color: '#fff',
+            backgroundColor: '#FB7185',
+            '&:hover': {
+              backgroundColor: '#FBBF24',
+              color: '#111827',
+            },
+          },
+          containedSecondary: {
+            color: '#111827',
+            backgroundColor: '#FBBF24',
+            '&:hover': {
+              backgroundColor: '#FB7185',
+              color: '#fff',
+            },
+          },
+        },
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            backgroundColor: mode === 'dark' ? '#1F2937' : '#FB7185',
+            color: '#fff',
           },
         },
       },
@@ -71,9 +106,51 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         styleOverrides: {
           root: {
             borderRadius: 12,
-            boxShadow: mode === 'light' 
-              ? '0 2px 4px rgba(0,0,0,0.1)' 
-              : '0 2px 4px rgba(0,0,0,0.3)',
+            boxShadow: mode === 'light'
+              ? '0 2px 8px rgba(251,113,133,0.08)'
+              : '0 2px 8px rgba(251,191,36,0.12)',
+            backgroundColor: mode === 'light' ? '#fff' : '#273449',
+            color: mode === 'dark' ? '#F9FAFB' : '#111827',
+          },
+        },
+      },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: mode === 'dark' ? '#1F2937' : '#fff7ed',
+            color: mode === 'dark' ? '#F9FAFB' : '#111827',
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: mode === 'dark' ? '#273449' : '#fff',
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            color: mode === 'dark' ? '#FBBF24' : '#FB7185',
+            backgroundColor: mode === 'light' ? '#fff' : 'transparent',
+            border: mode === 'light' ? '1.5px solid #FBBF24' : 'none',
+            boxShadow: mode === 'light' ? '0px 2px 8px rgba(251,191,36,0.10)' : 'none',
+            transition: 'background 0.2s, color 0.2s',
+          },
+        },
+      },
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: {
+            color: mode === 'dark' ? '#FBBF24' : '#FB7185',
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            color: mode === 'dark' ? '#F9FAFB' : '#111827',
           },
         },
       },
@@ -93,4 +170,4 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       </MUIThemeProvider>
     </ThemeContext.Provider>
   );
-}; 
+};

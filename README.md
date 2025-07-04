@@ -2,12 +2,6 @@
 
 A modern web-based Hospital Management System built with React, TypeScript, Flask, and SQLite.
 
-
-## Demo Credentials
-
-- **Username:** admin
-- **Password:** 123
-
 ## Features
 
 - Patient Management
@@ -19,6 +13,20 @@ A modern web-based Hospital Management System built with React, TypeScript, Flas
 - Lab Test Management
 - Modern UI with Light/Dark Mode
 - Responsive Design
+
+## Test Login Credentials
+
+Use the following credentials to log in as each user role:
+
+| Role         | Username      | Password   |
+|--------------|--------------|------------|
+| Admin        | admin        | admin123   |
+| Doctor       | doctor1      | doc123     |
+| Patient      | patient1     | pat123     |
+| Receptionist | reception1   | rec123     |
+| Manager      | manager1     | man123     |
+
+> **Note:** If you add new roles, update this table accordingly and seed the backend with the new users.
 
 ## Tech Stack
 
@@ -81,6 +89,18 @@ SECRET_KEY=your-secret-key
 JWT_SECRET_KEY=your-jwt-secret
 ```
 
+## Lottie Animations Integration
+
+The landing page now features visually relevant Lottie animations using the `<lottie-player>` web component:
+
+- **Hero Section:** Uses `hospital.json` (hospital/healthcare animation)
+- **Features Section:**
+  - Appointment Scheduling: `medical-lottie.json`
+  - Medical Records: `doctor.json`
+  - Qualified Doctors: `doctor.json`
+
+All Lottie files are located in `frontend/src/assets/` and are set to autoplay, loop, and be responsive.
+
 ## Contributing
 
 1. Fork the repository
@@ -91,4 +111,4 @@ JWT_SECRET_KEY=your-jwt-secret
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.

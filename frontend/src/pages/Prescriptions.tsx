@@ -141,6 +141,14 @@ const Prescriptions: React.FC = () => {
     navigate(`/prescriptions/${id}`);
   };
 
+  // Only allow patients to view their own prescriptions, not add new ones
+  const isPatient = localStorage.getItem('role') === 'patient';
+
+  // Only show prescriptions for the logged-in patient if patient role
+  const filteredPrescriptions = isPatient
+    ? prescriptions.filter(p => p.patient_id === Number(localStorage.getItem('userId')))
+    : prescriptions;
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
@@ -155,7 +163,7 @@ const Prescriptions: React.FC = () => {
           <Typography variant="h4" component="h1">
             Prescriptions
           </Typography>
-          {selectedPatientId && (
+          {selectedPatientId && !isPatient && (
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -207,11 +215,11 @@ const Prescriptions: React.FC = () => {
           </Box>
         ) : prescriptions.length === 0 ? (
           <Alert severity="info" sx={{ my: 4 }}>
-            There are no prescriptions for this patient right now.
+            No prescriptions yet.
           </Alert>
         ) : (
           <PrescriptionTable
-            prescriptions={prescriptions}
+            prescriptions={filteredPrescriptions}
             onDelete={handleDeletePrescription}
           />
         )}
@@ -241,4 +249,4 @@ const Prescriptions: React.FC = () => {
   );
 };
 
-export default Prescriptions; 
+export default Prescriptions;

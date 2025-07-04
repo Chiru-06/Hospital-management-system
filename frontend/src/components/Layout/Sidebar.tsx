@@ -2,21 +2,18 @@ import React, { useState } from 'react';
 import {
   Drawer,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Divider,
   IconButton,
   Box,
   useTheme as useMuiTheme,
   styled,
   Theme,
-  ListItemButton,
-  Divider,
-  Typography,
   useMediaQuery,
   keyframes,
 } from '@mui/material';
 import {
+  Menu,
+  Dashboard,
   People,
   CalendarToday,
   LocalHospital,
@@ -24,15 +21,12 @@ import {
   Receipt,
   Description,
   Science,
-  Dashboard,
-  Brightness4,
-  Brightness7,
-  Menu,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTheme } from '../../theme/ThemeContext';
+import SidebarItem from './SidebarItem';
+import logo from '../../assets/logo1.png';
 
-const drawerWidth = 240;
+const drawerWidth = 256;
 
 const pulse = keyframes`
   0% { transform: scale(1); }
@@ -47,62 +41,60 @@ const StyledDrawer = styled(Drawer)(({ theme }: { theme: Theme }) => ({
     width: drawerWidth,
     boxSizing: 'border-box',
     backgroundColor: theme.palette.background.default,
-    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRight: 'none',
     transition: 'all 0.3s ease-in-out',
   },
 }));
 
-const StyledListItemButton = styled(ListItemButton)(({ theme }: { theme: Theme }) => ({
-  borderRadius: '8px',
-  margin: '4px 8px',
-  transition: 'all 0.3s ease-in-out',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-    transform: 'translateX(5px)',
-    '& .MuiListItemIcon-root': {
-      transform: 'scale(1.2)',
-      color: theme.palette.primary.main,
-    },
-    '& .MuiListItemText-primary': {
-      color: theme.palette.primary.main,
-      fontWeight: 'bold',
-    },
-  },
-  '&.Mui-selected': {
-    backgroundColor: theme.palette.primary.light,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.light,
-    },
-    '& .MuiListItemIcon-root': {
-      color: theme.palette.primary.main,
-    },
-    '& .MuiListItemText-primary': {
-      color: theme.palette.primary.main,
-      fontWeight: 'bold',
-    },
-  },
-}));
+const getMenuItemsForRole = (role: string | null) => {
+  switch (role) {
+    case 'admin':
+      return [
+        { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard/admin' },
+        { text: 'Patients', icon: <People />, path: '/patients' },
+        { text: 'Appointments', icon: <CalendarToday />, path: '/appointments' },
+        { text: 'Doctors', icon: <LocalHospital />, path: '/doctors' },
+        { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
+        { text: 'Billing', icon: <Receipt />, path: '/billing' },
+        { text: 'Prescriptions', icon: <Description />, path: '/prescriptions' },
+        { text: 'Lab Tests', icon: <Science />, path: '/lab-tests' },
+      ];
+    case 'doctor':
+      return [
+        { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard/doctor' },
+        { text: 'Appointments', icon: <CalendarToday />, path: '/appointments' },
+        { text: 'Patients', icon: <People />, path: '/patients' },
+        { text: 'Lab Tests', icon: <Science />, path: '/lab-tests' },
+        { text: 'Prescriptions', icon: <Description />, path: '/prescriptions' },
+      ];
+    case 'manager':
+      return [
+        { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard/manager' },
+        { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
+        { text: 'Billing', icon: <Receipt />, path: '/billing' },
+      ];
+    case 'patient':
+      return [
+        { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard/patient' },
+        { text: 'Appointments', icon: <CalendarToday />, path: '/appointments' },
+        { text: 'Lab Tests', icon: <Science />, path: '/lab-tests' },
+        { text: 'Prescriptions', icon: <Description />, path: '/prescriptions' },
+        { text: 'Billing', icon: <Receipt />, path: '/billing' }
+      ];
+    default:
+      return [];
+  }
+};
 
-const StyledListItemIcon = styled(ListItemIcon)(({ theme }: { theme: Theme }) => ({
-  minWidth: '40px',
-  transition: 'all 0.3s ease-in-out',
-}));
+// Add props for collapsed state and collapse toggle
+interface SidebarProps {
+  collapsed: boolean;
+  onCollapseToggle: () => void;
+}
 
-const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-  { text: 'Patients', icon: <People />, path: '/patients' },
-  { text: 'Appointments', icon: <CalendarToday />, path: '/appointments' },
-  { text: 'Doctors', icon: <LocalHospital />, path: '/doctors' },
-  { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
-  { text: 'Billing', icon: <Receipt />, path: '/billing' },
-  { text: 'Prescriptions', icon: <Description />, path: '/prescriptions' },
-  { text: 'Lab Tests', icon: <Science />, path: '/lab-tests' },
-];
-
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapseToggle }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useMuiTheme();
-  const { mode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -111,84 +103,59 @@ const Sidebar: React.FC = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const role = localStorage.getItem('role');
+  const menuItems = getMenuItemsForRole(role);
+
   const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography 
-          variant="h6" 
-          component="div"
-          sx={{
-            fontWeight: 'bold',
-            color: 'primary.main',
-            animation: `${pulse} 2s infinite`,
-          }}
-        >
-          HMS
-        </Typography>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+      {/* Logo only at the top */}
+      <Box sx={{
+        p: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        minHeight: 64,
+        minWidth: 0,
+        width: '100%',
+        transition: 'all 0.3s',
+        overflow: 'visible',
+      }}>
+        <Box
+          component="img"
+          src={logo}
+          alt="HopeSpring Hospital Logo"
+          sx={{ height: 40, width: 40, transition: 'all 0.3s', flexShrink: 0 }}
+        />
+      </Box>
+      {/* Toggle button below logo */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+        <IconButton onClick={onCollapseToggle} size="large" sx={{ transition: 'transform 0.3s', transform: collapsed ? 'rotate(180deg)' : 'none' }}>
+          <Menu />
+        </IconButton>
       </Box>
       <Divider />
-      <List sx={{ flexGrow: 1 }}>
+      <List sx={{ flexGrow: 1, pt: 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <StyledListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
-            >
-              <StyledListItemIcon>{item.icon}</StyledListItemIcon>
-              <ListItemText 
-                primary={item.text}
-                primaryTypographyProps={{
-                  sx: {
-                    transition: 'all 0.3s ease-in-out',
-                  }
-                }}
-              />
-            </StyledListItemButton>
-          </ListItem>
+          <SidebarItem
+            key={item.text}
+            icon={item.icon}
+            text={item.text}
+            collapsed={collapsed}
+            selected={location.pathname === item.path}
+            onClick={() => navigate(item.path)}
+          />
         ))}
       </List>
-      <Box sx={{ mt: 'auto', p: 2 }}>
+      <Box sx={{ mt: 'auto', p: 1 }}>
         <Divider />
-        <ListItem disablePadding>
-          <StyledListItemButton onClick={toggleTheme}>
-            <StyledListItemIcon>
-              {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-            </StyledListItemIcon>
-            <ListItemText 
-              primary={mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-              primaryTypographyProps={{
-                sx: {
-                  transition: 'all 0.3s ease-in-out',
-                }
-              }}
-            />
-          </StyledListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <StyledListItemButton onClick={() => {
-            localStorage.removeItem('role');
-            window.location.href = '/login';
-          }}>
-            <StyledListItemIcon>
-              {/* You can use any icon you like here */}
-              <Dashboard />
-            </StyledListItemIcon>
-            <ListItemText 
-              primary="Logout"
-              primaryTypographyProps={{
-                sx: {
-                  transition: 'all 0.3s ease-in-out',
-                }
-              }}
-            />
-          </StyledListItemButton>
-        </ListItem>
+        {/* Removed theme toggle and logout from sidebar, now in Topbar */}
       </Box>
     </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minWidth: 0 }}>
       {isMobile && (
         <IconButton
           color="inherit"
@@ -210,9 +177,40 @@ const Sidebar: React.FC = () => {
         variant={isMobile ? 'temporary' : 'permanent'}
         open={isMobile ? mobileOpen : true}
         onClose={handleDrawerToggle}
+        PaperProps={{
+          sx: {
+            width: collapsed ? 72 : drawerWidth,
+            minWidth: collapsed ? 72 : drawerWidth,
+            maxWidth: collapsed ? 72 : drawerWidth,
+            overflow: 'hidden',
+            transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)',
+            borderRight: 'none',
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            height: '100vh',
+            zIndex: 1200,
+          },
+        }}
       >
         {drawer}
       </StyledDrawer>
+      {/* Main content wrapper, shifts right when sidebar is open */}
+      <Box component="main" sx={{
+        flexGrow: 1,
+        ml: 0, // Remove all margin between sidebar and content
+        transition: 'none', // No margin animation needed
+        minWidth: 0,
+        p: 0,
+        width: '100%',
+        // Ensure content is flush with sidebar
+      }}>
+        {/* ...main content goes here... */}
+      </Box>
     </Box>
   );
 };

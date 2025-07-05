@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   AppBar,
   Toolbar,
@@ -18,6 +19,7 @@ import Brightness7 from '@mui/icons-material/Brightness7';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../theme/ThemeContext';
 import logo from '../assets/logo1.png';
+import FullScreenImageCarousel from '../components/FullScreenImageCarousel';
 
 // Declare lottie-player as a custom element for TypeScript
 // (Place this after all imports)
@@ -105,41 +107,57 @@ const Landing: React.FC = () => {
           </Toolbar>
         </Container>
       </AppBar>
+      {/* Image Carousel Section - now below topbar */}
+      <Box sx={{ width: '100vw', maxWidth: '100%', mb: 8, px: 0, mt: 0 }}>
+        <FullScreenImageCarousel />
+      </Box>
 
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 10 }, mb: 8 }}>
         <Grid container spacing={6} alignItems="center">
           <Grid item xs={12} md={6}>
-            <Typography variant="h3" fontWeight={900} gutterBottom sx={{ fontSize: { xs: 32, md: 44 }, color: heroTitle, letterSpacing: 1, textShadow: '0 2px 16px #fb718555' }}>
-              <span style={{ display: 'inline-block', position: 'relative' }}>
-                Your Health, Our Priority
-                <span style={{ position: 'absolute', left: 0, bottom: -8, width: '100%', height: 6, background: 'linear-gradient(90deg,#fb7185,#fbbf24)', borderRadius: 3, opacity: 0.3 }} />
-              </span>
-            </Typography>
-            <Typography variant="h6" sx={{ mb: 4, fontWeight: 500, color: heroSub }}>
-              HopeSpring Hospital empowers hospitals and clinics with seamless appointment management, secure records, and expert care.
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              sx={{ px: 5, py: 1.5, borderRadius: 3, fontWeight: 700, fontSize: 20, boxShadow: 3, bgcolor: buttonBg, color: buttonText, '&:hover': { bgcolor: buttonHover, transform: 'scale(1.08)' }, transition: 'transform 0.2s' }}
-              onClick={() => navigate('/login')}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              Book Appointment
-            </Button>
+              <Typography variant="h3" fontWeight={900} gutterBottom sx={{ fontSize: { xs: 32, md: 44 }, color: heroTitle, letterSpacing: 1, textShadow: '0 2px 16px #fb718555' }}>
+                <span style={{ display: 'inline-block', position: 'relative' }}>
+                  Your Health, Our Priority
+                  <span style={{ position: 'absolute', left: 0, bottom: -8, width: '100%', height: 6, background: 'linear-gradient(90deg,#fb7185,#fbbf24)', borderRadius: 3, opacity: 0.3 }} />
+                </span>
+              </Typography>
+              <Typography variant="h6" sx={{ mb: 4, fontWeight: 500, color: heroSub }}>
+                HopeSpring Hospital empowers hospitals and clinics with seamless appointment management, secure records, and expert care.
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                sx={{ px: 5, py: 1.5, borderRadius: 3, fontWeight: 700, fontSize: 20, boxShadow: 3, bgcolor: buttonBg, color: buttonText, '&:hover': { bgcolor: buttonHover, transform: 'scale(1.08)' }, transition: 'transform 0.2s' }}
+                onClick={() => navigate('/login')}
+              >
+                Book Appointment
+              </Button>
+            </motion.div>
           </Grid>
           <Grid item xs={12} md={6} sx={{ textAlign: 'center' }}>
-            {/* Lottie hospital animation in hero */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <lottie-player
-                src={require('../assets/hospital.json')}
-                background="transparent"
-                speed="1"
-                style={{ width: '320px', height: '320px', margin: '0 auto', maxWidth: '100%' }}
-                loop
-                autoplay
-              />
-            </Box>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1 }}
+            >
+              {/* Lottie hospital animation in hero */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <lottie-player
+                  src={require('../assets/hospital.json')}
+                  background="transparent"
+                  speed="1"
+                  style={{ width: '320px', height: '320px', margin: '0 auto', maxWidth: '100%' }}
+                  loop
+                  autoplay
+                />
+              </Box>
+            </motion.div>
           </Grid>
         </Grid>
       </Container>
@@ -149,91 +167,214 @@ const Landing: React.FC = () => {
         <Grid container spacing={4} justifyContent="center">
           {/* Feature 1: Appointment Scheduling (medical-lottie.json) */}
           <Grid item xs={12} sm={6} md={4}>
-            <Card elevation={3} sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
-              onClick={() => navigate('/login')}
-              tabIndex={0}
-              role="button"
-              aria-label="Go to Appointment Scheduling"
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/login'); } }}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
             >
-              <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>🗓️</Box>
-              <Box mb={2}>
-                <lottie-player
-                  src={require('../assets/medical-lottie.json')}
-                  background="transparent"
-                  speed="1"
-                  style={{ width: '80px', height: '80px' }}
-                  loop
-                  autoplay
-                />
-              </Box>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
-                Appointment Scheduling
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
-                Book, manage, and track appointments with ease.
-              </Typography>
-            </Card>
+              <Card elevation={3} sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
+                onClick={() => navigate('/login')}
+                tabIndex={0}
+                role="button"
+                aria-label="Go to Appointment Scheduling"
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/login'); } }}
+              >
+                <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>🗓️</Box>
+                <Box mb={2}>
+                  <lottie-player
+                    src={require('../assets/medical-lottie.json')}
+                    background="transparent"
+                    speed="1"
+                    style={{ width: '80px', height: '80px' }}
+                    loop
+                    autoplay
+                  />
+                </Box>
+                <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
+                  Appointment Scheduling
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
+                  Book, manage, and track appointments with ease.
+                </Typography>
+              </Card>
+            </motion.div>
           </Grid>
           {/* Feature 2: Medical Records (doctor.json) */}
           <Grid item xs={12} sm={6} md={4}>
-            <Card elevation={3} sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
-              onClick={() => navigate('/login')}
-              tabIndex={0}
-              role="button"
-              aria-label="Go to Medical Records"
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/login'); } }}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>📋</Box>
-              <Box mb={2}>
-                <lottie-player
-                  src={require('../assets/doctor.json')}
-                  background="transparent"
-                  speed="1"
-                  style={{ width: '80px', height: '80px' }}
-                  loop
-                  autoplay
-                />
-              </Box>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
-                Medical Records
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
-                Access and update patient records securely anytime.
-              </Typography>
-            </Card>
+              <Card elevation={3} sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
+                onClick={() => navigate('/login')}
+                tabIndex={0}
+                role="button"
+                aria-label="Go to Medical Records"
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/login'); } }}
+              >
+                <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>📋</Box>
+                <Box mb={2}>
+                  <lottie-player
+                    src={require('../assets/doctor.json')}
+                    background="transparent"
+                    speed="1"
+                    style={{ width: '80px', height: '80px' }}
+                    loop
+                    autoplay
+                  />
+                </Box>
+                <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
+                  Medical Records
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
+                  Access and update patient records securely anytime.
+                </Typography>
+              </Card>
+            </motion.div>
           </Grid>
           {/* Feature 3: Qualified Doctors (doctor.json) */}
           <Grid item xs={12} sm={6} md={4}>
-            <Card
-              elevation={3}
-              sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
-              onClick={() => navigate('/doctors-list')}
-              tabIndex={0}
-              role="button"
-              aria-label="View Qualified Doctors"
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/doctors-list'); } }}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.3 }}
             >
-              <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>🩺</Box>
-              <Box mb={2}>
-                <lottie-player
-                  src={require('../assets/doctor.json')}
-                  background="transparent"
-                  speed="1"
-                  style={{ width: '80px', height: '80px' }}
-                  loop
-                  autoplay
-                />
-              </Box>
-              <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
-                Qualified Doctors
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
-                Consult with experienced and certified professionals.
-              </Typography>
-            </Card>
+              <Card
+                elevation={3}
+                sx={{ borderRadius: 4, p: 2, minHeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg, transition: 'box-shadow 0.3s', '&:hover': { boxShadow: 8, cursor: 'pointer', transform: 'scale(1.03)' } }}
+                onClick={() => navigate('/doctors-list')}
+                tabIndex={0}
+                role="button"
+                aria-label="View Qualified Doctors"
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { navigate('/doctors-list'); } }}
+              >
+                <Box mb={1} mt={1} sx={{ fontSize: 36, textAlign: 'center' }}>🩺</Box>
+                <Box mb={2}>
+                  <lottie-player
+                    src={require('../assets/doctor.json')}
+                    background="transparent"
+                    speed="1"
+                    style={{ width: '80px', height: '80px' }}
+                    loop
+                    autoplay
+                  />
+                </Box>
+                <Typography variant="h6" fontWeight={700} gutterBottom sx={{ color: cardText }}>
+                  Qualified Doctors
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9, textAlign: 'center', color: cardDesc }}>
+                  Consult with experienced and certified professionals.
+                </Typography>
+              </Card>
+            </motion.div>
           </Grid>
         </Grid>
+      </Container>
+
+      {/* Slogan Section */}
+      <Box sx={{ textAlign: 'center', mt: 4, mb: 4 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <Typography variant="h4" fontWeight={800} color={SUNRISE.primary} sx={{ letterSpacing: 2 }}>
+            Inspiring Hope
+          </Typography>
+        </motion.div>
+      </Box>
+
+      {/* Patient Stories Section */}
+      <Container maxWidth="lg" sx={{ mb: 8 }}>
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: heroTitle, textAlign: 'center' }}>
+            Patient Stories
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            {/* Example patient story cards */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, borderRadius: 4, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg }}>
+                <Box mb={2}>
+                  <lottie-player src={require('../assets/medical-lottie.json')} background="transparent" speed="1" style={{ width: '60px', height: '60px' }} loop autoplay />
+                </Box>
+                <Typography variant="body1" sx={{ color: cardDesc, mb: 1 }}>
+                  “HopeSpring Hospital gave me a new lease on life. The care and compassion were unmatched.”
+                </Typography>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ color: cardText }}>
+                  – Priya S.
+                </Typography>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, borderRadius: 4, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg }}>
+                <Box mb={2}>
+                  <lottie-player src={require('../assets/doctor.json')} background="transparent" speed="1" style={{ width: '60px', height: '60px' }} loop autoplay />
+                </Box>
+                <Typography variant="body1" sx={{ color: cardDesc, mb: 1 }}>
+                  “The doctors listened to me and explained everything. I felt safe and hopeful throughout my treatment.”
+                </Typography>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ color: cardText }}>
+                  – Rahul M.
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </motion.div>
+      </Container>
+
+      {/* Doctor Stories Section */}
+      <Container maxWidth="lg" sx={{ mb: 8 }}>
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: heroTitle, textAlign: 'center' }}>
+            Doctor Stories
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, borderRadius: 4, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg }}>
+                <Box mb={2}>
+                  <lottie-player src={require('../assets/doctor.json')} background="transparent" speed="1" style={{ width: '60px', height: '60px' }} loop autoplay />
+                </Box>
+                <Typography variant="body1" sx={{ color: cardDesc, mb: 1 }}>
+                  “Every day, I see hope restored in my patients’ eyes. That’s why I love working at HopeSpring.”
+                </Typography>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ color: cardText }}>
+                  – Dr. Meera K.
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </motion.div>
+      </Container>
+
+      {/* Testimonials Section */}
+      <Container maxWidth="lg" sx={{ mb: 8 }}>
+        <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 3, color: heroTitle, textAlign: 'center' }}>
+            What Our Patients Say
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, borderRadius: 4, minHeight: 150, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg }}>
+                <Typography variant="body1" sx={{ color: cardDesc, mb: 1 }}>
+                  “The staff was so friendly and the process was smooth. I recommend HopeSpring to everyone.”
+                </Typography>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ color: cardText }}>
+                  – Anjali T.
+                </Typography>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, borderRadius: 4, minHeight: 150, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: cardBg }}>
+                <Typography variant="body1" sx={{ color: cardDesc, mb: 1 }}>
+                  “HopeSpring truly lives up to its name. I felt inspired and cared for every step of the way.”
+                </Typography>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ color: cardText }}>
+                  – Suresh P.
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </motion.div>
       </Container>
 
       {/* Contact Us Section */}

@@ -6,6 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import RoleBasedLogin from './components/Auth/RoleBasedLogin';
+import Register from './pages/Register';
 
 // Import pages
 import Appointments from './pages/Appointments';
@@ -43,6 +44,7 @@ const App: React.FC = () => {
       '/login',
       '/about',
       '/doctors-list',
+      '/register', // <-- allow register page for unauthenticated users
       ...allDashboardPaths,
       '/patients',
       '/appointments',
@@ -53,12 +55,12 @@ const App: React.FC = () => {
       '/lab-tests',
     ];
     // Always show landing page first if not logged in, except for allowed public pages
-    if (!role && !['/', '/login', '/about', '/doctors-list'].includes(location.pathname)) {
+    if (!role && !['/', '/login', '/about', '/doctors-list', '/register'].includes(location.pathname)) {
       navigate('/', { replace: true });
       return;
     }
     // If not logged in and not on login, landing, about, or doctors-list, redirect to login from any protected route
-    if (!role && !['/login', '/', '/about', '/doctors-list'].includes(location.pathname)) {
+    if (!role && !['/login', '/', '/about', '/doctors-list', '/register'].includes(location.pathname)) {
       navigate('/login', { replace: true });
       return;
     }
@@ -103,6 +105,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/doctors-list" element={<DoctorsList />} />
+          <Route path="/register" element={<Register />} />
           {/* All other routes (including dashboards, login, etc.) */}
           <Route path="/login" element={<RoleBasedLogin onLogin={role => { localStorage.setItem('role', role); window.location.href = `/dashboard/${role}`; }} />} />
           <Route path="/dashboard/admin" element={<Layout><AdminDashboard /></Layout>} />

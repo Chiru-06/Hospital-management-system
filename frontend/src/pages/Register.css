@@ -1,0 +1,43 @@
+.register-container {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+
+.register-slogan {
+  text-align: center;
+  color: #fb7185;
+  font-weight: 900;
+  margin-top: 16px;
+  margin-bottom: 0;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+}
+
+.register-form {
+  margin-top: 24px;
+  margin-bottom: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px #0001;
+  padding: 32px;
+}
+
+@media (max-width: 900px) {
+  .register-form {
+    padding: 16px;
+  }
+}
+
+.register-login-link {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.login-link {
+  color: #1976d2;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}

@@ -20,10 +20,10 @@ Use the following credentials to log in as each user role:
 
 | Role         | Username      | Password   |
 |--------------|--------------|------------|
-| Admin        | admin        | 123     |
-| Doctor       | doctor1      | 123     |
-| Patient      | patient1     | 123     |
-| Manager      | manager1     | 123     |
+| Admin        | admin       | 123     |
+| Doctor       | doctor      | 123     |
+| Patient      | patient     | 123     |
+| Manager      | manager     | 123     |
 
 > **Note:** If you add new roles, update this table accordingly and seed the backend with the new users.
 

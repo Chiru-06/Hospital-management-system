@@ -52,7 +52,7 @@ def create_app():
                 "http://127.0.0.1:3000",
                 "http://localhost:3001",
                 "http://127.0.0.1:3001",
-                "https://hospital-management-system-theta-five.vercel.app"
+                "https://hospital-management-system-v3.vercel.app"
             ],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type"],

@@ -1,7 +1,10 @@
 import sys
 import os
+
+project_home = '/home/chiragchiru/backend'
+if project_home not in sys.path:
+    sys.path.insert(0, project_home)
+os.chdir(project_home)
+
 from app import create_app
-
-sys.path.insert(0, os.path.dirname(__file__))
-
 application = create_app()
